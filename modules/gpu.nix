@@ -33,23 +33,20 @@
   ];
 
   # ── LACT daemon ───────────────────────────────────────────────────────────
-  # LACT requires a background daemon running as root so it can write to
-  # sysfs power management knobs. We define the service manually here so
-  # the daemon binary is taken from the same flake-pinned package.
-  systemd.services.lactd = {
-    description = "LACT AMDGPU Control Daemon";
-    wantedBy    = [ "multi-user.target" ];
-    after       = [ "multi-user.target" ];
+  # The LACT flake ships its own NixOS module which declares the lactd systemd
+  # service correctly, including hardening options and the right ExecStart path.
+  # We import that module here rather than re-rolling our own service definition,
+  # so any upstream changes to the unit (new flags, sandboxing, etc.) are picked
+  # up automatically when the flake input is updated.
+  #
+  # The module is passed in via flake.nix → specialArgs and wired in below.
+  # It sets:
+  #   systemd.services.lactd.wantedBy    = [ "multi-user.target" ]
+  #   systemd.services.lactd.serviceConfig.ExecStart = "<lact>/bin/lact daemon"
+  #   systemd.services.lactd.serviceConfig.User      = "root"
+  imports = [ lact.nixosModules.default ];
 
-    serviceConfig = {
-      ExecStart       = "${lact.packages.${pkgs.system}.default}/bin/lact daemon";
-      Restart         = "on-failure";
-      RestartSec      = "5s";
-      # Must run as root — required for sysfs GPU controls
-      User            = "root";
-      Group           = "root";
-    };
-  };
+  services.lact.enable = true;
 
   # ── ROCm environment ──────────────────────────────────────────────────────
   # Tell ROCm which GPU architecture to target.
