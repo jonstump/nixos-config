@@ -184,6 +184,13 @@
     # ── Misc utilities LazyVim plugins call out to ────────────────────────
     gnumake        # Some Treesitter parsers need make
     unzip          # Mason fallback extracter (less needed when using Nix)
+
+    # ── Syncthing tray ────────────────────────────────────────────────────
+    # syncthing-tray is the GUI companion to the syncthing user service
+    # defined below. Installed here so the package and service share a
+    # single source of truth in home.nix rather than being split across
+    # desktop.nix and home.nix.
+    syncthing-tray # System tray applet for monitoring the Syncthing daemon
   ];
 
   # ── Git ───────────────────────────────────────────────────────────────────
@@ -207,8 +214,9 @@
   };
 
   # ── Kitty terminal ────────────────────────────────────────────────────────
-  # Kitty is installed as a system package in desktop.nix. Its config lives
-  # here so Home Manager keeps it in sync declaratively.
+  # programs.kitty both installs Kitty and manages its config declaratively.
+  # Kitty is the primary terminal. Konsole remains available as a fallback
+  # (it is installed as part of the KDE package set in desktop.nix).
   programs.kitty = {
     enable   = true;
     font = {
@@ -289,9 +297,11 @@
   };
 
   # ── Syncthing (user service) ──────────────────────────────────────────────
-  # Syncthing is installed as a system package in desktop.nix. Running it as
-  # a user systemd service means it starts on login and runs under your UID,
-  # which is the standard setup for a single-user desktop machine.
+  # Syncthing daemon and its tray applet are both managed here in home.nix —
+  # the package via home.packages (syncthing-tray) and the daemon via this
+  # service block. Running it as a user systemd service means it starts on
+  # login and runs under jon's UID, which is the standard setup for a
+  # single-user desktop machine.
   services.syncthing = {
     enable = true;
     # Syncthing's web UI is available at http://localhost:8384 by default.

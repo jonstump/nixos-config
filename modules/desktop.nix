@@ -1,27 +1,30 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Use Wayland-native session via SDDM + KDE Plasma 6
+  # ── Display Manager ───────────────────────────────────────────────────────
+  # Wayland-native session via SDDM + KDE Plasma 6.
+  # services.xserver is intentionally absent — we do not enable the X server.
+  # XWayland (below) provides X11 app compatibility without a full X server.
   services.displayManager = {
     sddm = {
-      enable      = true;
+      enable         = true;
       wayland.enable = true;
-      theme       = "breeze";
+      theme          = "breeze";
     };
     defaultSession = "plasma";
   };
 
   services.desktopManager.plasma6.enable = true;
 
-  # ── Wayland / XWayland ────────────────────────────────────────────────────
-  # XWayland allows legacy X11 apps (including many games) to run under Wayland
+  # ── XWayland ──────────────────────────────────────────────────────────────
+  # XWayland is a compatibility layer that lets X11 applications run inside a
+  # Wayland compositor. It is not an X server — there is no separate X session.
+  # Most games and legacy apps that haven't been ported to Wayland use this.
   programs.xwayland.enable = true;
 
-  # ── Input ─────────────────────────────────────────────────────────────────
-  services.libinput.enable = true;
-
   # ── Audio (PipeWire) ──────────────────────────────────────────────────────
-  # Disable PulseAudio in favour of PipeWire
+  # PulseAudio is disabled in favour of PipeWire, which provides PulseAudio,
+  # ALSA, and JACK compatibility shims from a single low-latency daemon.
   hardware.pulseaudio.enable = false;
 
   security.rtkit.enable = true; # Required for real-time audio scheduling
@@ -29,18 +32,18 @@
   services.pipewire = {
     enable            = true;
     alsa.enable       = true;
-    alsa.support32Bit = true; # Needed for 32-bit games via Steam
+    alsa.support32Bit = true; # Needed for 32-bit games via Steam / Proton
     pulse.enable      = true; # PulseAudio compatibility shim
-    jack.enable       = true; # JACK compatibility (optional but useful)
+    jack.enable       = true; # JACK compatibility (optional but useful for audio work)
 
-    # Low-latency tuning
+    # Low-latency tuning — good defaults for a gaming machine
     extraConfig.pipewire = {
       "99-low-latency" = {
         context.properties = {
-          default.clock.rate          = 48000;
-          default.clock.quantum       = 512;
-          default.clock.min-quantum   = 32;
-          default.clock.max-quantum   = 8192;
+          default.clock.rate        = 48000;
+          default.clock.quantum     = 512;
+          default.clock.min-quantum = 32;
+          default.clock.max-quantum = 8192;
         };
       };
     };
@@ -49,49 +52,47 @@
   # ── KDE / Plasma packages ─────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     # KDE core extras
-    kdePackages.plasma-browser-integration
-    kdePackages.kde-gtk-config        # GTK theme integration
-    kdePackages.kdialog
-    kdePackages.ark                   # Archive manager
-    kdePackages.dolphin               # File manager
-    kdePackages.konsole               # Terminal emulator
-    kdePackages.kate                  # Text editor
-    kdePackages.spectacle             # Screenshot tool
-    kdePackages.gwenview              # Image viewer
-    kdePackages.okular                # Document viewer
-    kdePackages.kcalc                 # Calculator
-    kdePackages.filelight             # Disk usage visualiser
-    kdePackages.kdeconnect            # Phone integration
+    kdePackages.plasma-browser-integration # Browser media controls in KDE taskbar
+    kdePackages.kde-gtk-config             # GTK theme integration (non-Qt apps look native)
+    kdePackages.kdialog                    # Shell-scriptable KDE dialog boxes
+    kdePackages.ark                        # Archive manager (zip, tar, 7z, etc.)
+    kdePackages.dolphin                    # Default file manager
+    kdePackages.konsole                    # KDE terminal emulator (fallback alongside Kitty)
+    kdePackages.kate                       # Advanced text editor with LSP support
+    kdePackages.spectacle                  # Screenshot and screen recording tool
+    kdePackages.gwenview                   # Image viewer
+    kdePackages.okular                     # Document viewer (PDF, ePub, etc.)
+    kdePackages.kcalc                      # Calculator
+    kdePackages.filelight                  # Disk usage visualiser
+    kdePackages.kdeconnect                 # Phone/tablet integration (notifications, clipboard, files)
 
-    # GTK theming so non-Qt apps look native
+    # GTK theming — ensures GTK apps respect the KDE colour scheme
     gtk3
     gtk4
     adwaita-icon-theme
-    libsForQt5.qtstyleplugin-kvantum
+    libsForQt5.qtstyleplugin-kvantum       # Kvantum theme engine for Qt5 apps
 
-    # Fonts rendering
+    # Font rendering libraries
     freetype
     fontconfig
 
-    # Wayland utilities
-    wl-clipboard
+    # XDG utilities — used by many apps for opening files, URLs, and directories
     xdg-utils
     xdg-user-dirs
 
-    # Additional must haves
-    signal-desktop   # Encrypted messaging client — Signal protocol
-    ferdium          # All-in-one messaging hub; wraps Slack, WhatsApp, Telegram, etc. in one window
-    kitty            # GPU-accelerated terminal emulator; used as the primary terminal alongside Konsole
-    zed-editor       # Fast, collaborative code editor written in Rust
-    syncthing        # Continuous peer-to-peer file synchronisation daemon (no cloud required)
-    syncthing-tray   # System tray GUI for monitoring and controlling the Syncthing daemon
-    _1password-gui   # 1Password desktop client — requires a 1Password subscription
-    feishin          # Modern Navidrome / Subsonic / Jellyfin music player client
+    # Messaging & productivity
+    signal-desktop  # Encrypted messaging client — Signal protocol
+    ferdium         # All-in-one messaging hub; wraps Slack, WhatsApp, Telegram, etc. in one window
+    zed-editor      # Fast, collaborative code editor written in Rust
+    _1password-gui  # 1Password desktop client — requires a 1Password subscription
+    feishin         # Modern Navidrome / Subsonic / Jellyfin music player client
   ];
 
-  # ── XDG portals (required for Flatpak, screen sharing, file pickers) ──────
+  # ── XDG portals ───────────────────────────────────────────────────────────
+  # Required for screen sharing, file pickers, and Flatpak sandbox integration
+  # under Wayland. The KDE portal handles all of these natively in Plasma.
   xdg.portal = {
-    enable      = true;
+    enable       = true;
     extraPortals = [ pkgs.xdg-desktop-portal-kde ];
   };
 
@@ -104,21 +105,21 @@
     powerOnBoot = true;
     settings = {
       General = {
-        Enable          = "Source,Sink,Media,Socket";
-        Experimental    = true; # Enables battery reporting for BT devices
+        Enable       = "Source,Sink,Media,Socket";
+        Experimental = true; # Enables battery level reporting for BT peripherals
       };
     };
   };
-  services.blueman.enable = true;
+  services.blueman.enable = true; # Bluetooth manager GUI and tray applet
 
-  # ── Printing (optional — remove if not needed) ────────────────────────────
+  # ── Printing ──────────────────────────────────────────────────────────────
   services.printing.enable = true;
   services.avahi = {
-    enable   = true;
-    nssmdns4 = true;
-    openFirewall = true; # Allows mDNS for network printer discovery
+    enable       = true;
+    nssmdns4     = true;
+    openFirewall = true; # Opens UDP 5353 for mDNS — required for network printer discovery
   };
 
-  # ── Thumbnails & file indexing ────────────────────────────────────────────
-  services.tumbler.enable  = true; # Thumbnail generator for Dolphin
+  # ── Thumbnails ────────────────────────────────────────────────────────────
+  services.tumbler.enable = true; # Thumbnail generator service used by Dolphin
 }
