@@ -30,6 +30,12 @@
     allowedTCPPorts = [
       27036  # Steam Remote Play
       27015  # Steam game server SRCDS
+
+      # Apollo / Sunshine game streaming
+      # HTTPS web UI for the Apollo configuration dashboard
+      47990
+      # RTSP stream control (session negotiation)
+      48010
     ];
 
     allowedUDPPorts = [
@@ -40,14 +46,21 @@
       27035  # Steam Remote Play
       27036  # Steam Remote Play
       4380   # Steam
+
+      # Apollo / Sunshine game streaming
+      47998  # Video stream
+      47999  # Control stream
+      48000  # Audio stream
     ];
 
     allowedTCPPortRanges = [
       { from = 27015; to = 27030; } # Steam matchmaking / HLTV
+      { from = 47984; to = 47990; } # Apollo HTTPS / HTTP management ports
     ];
 
     allowedUDPPortRanges = [
       { from = 27000; to = 27100; } # Steam general UDP range
+      { from = 47998; to = 48000; } # Apollo audio / video / control streams
     ];
 
     # KDE Connect — phone integration
