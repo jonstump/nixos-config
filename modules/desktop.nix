@@ -1,16 +1,6 @@
 { config, pkgs, lib, ... }:
 
 {
-  # ── Display Server ────────────────────────────────────────────────────────
-  services.xserver = {
-    enable = true;
-
-    # 3440x1440 @ 100Hz ultrawide
-    displayManager.setupCommands = ''
-      ${pkgs.xorg.xrandr}/bin/xrandr --output DisplayPort-0 --mode 3440x1440 --rate 100
-    '';
-  };
-
   # Use Wayland-native session via SDDM + KDE Plasma 6
   services.displayManager = {
     sddm = {

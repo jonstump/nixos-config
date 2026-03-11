@@ -1,9 +1,6 @@
 { config, pkgs, lib, lact, ... }:
 
 {
-  # ── AMD GPU Driver ────────────────────────────────────────────────────────
-  services.xserver.videoDrivers = [ "amdgpu" ];
-
   # ── AMDGPU kernel module settings ────────────────────────────────────────
   # The ppfeaturemask is also set in core.nix kernelParams; this provides
   # the modprobe-level override as a belt-and-suspenders measure so LACT
