@@ -461,7 +461,7 @@
     kscreenlocker = {
       autoLock        = true;
       lockOnResume    = true;
-      timeout         = 30;   # Lock after 10 minutes of inactivity
+      timeout         = 600;   # Lock after 10 minutes of inactivity
     };
 
     # ── Input devices ─────────────────────────────────────────────────────

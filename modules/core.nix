@@ -21,7 +21,8 @@
       "amdgpu.ppfeaturemask=0xffffffff" # Unlock all amdgpu power/clock features for LACT
     ];
 
-    kernelModules = [ "kvm-amd" "amdgpu" ];
+    # Ensure the kernel's own hwmon thermal zone is available for monitoring.
+    kernelModules = [ "kvm-amd" "amdgpu" "k10temp" "nct6775"];
 
     initrd = {
       kernelModules = [ "amdgpu" ];
@@ -80,7 +81,7 @@
       # listing "jon" explicitly is redundant — but harmless. It's been kept
       # here only as a reminder that this is the account that will be running
       # nix commands day-to-day. Feel free to remove "jon" if you prefer.
-      trusted-users          = [ "root" "@wheel" "jon" ];
+      trusted-users          = [ "root" "@wheel" ];
 
       # Binary caches
       substituters = [
@@ -166,7 +167,7 @@
         sansSerif  = [ "Noto Sans" ];
         # System-wide default monospace font — used by terminals, code views,
         # and any app that requests a generic monospace font.
-        monospace  = [ "Mononoki Nerd Font Mono" ];
+        monospace  = [ "Mononoki Nerd Font" ];
       };
     };
   };

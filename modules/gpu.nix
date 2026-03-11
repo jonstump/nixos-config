@@ -11,10 +11,6 @@
     options amdgpu dc=1
   '';
 
-  # ── Fan / thermal safety (belt-and-suspenders alongside LACT) ────────────
-  # Ensure the kernel's own hwmon thermal zone is available for monitoring.
-  boot.kernelModules = [ "amdgpu" "k10temp" "nct6775" ];
-
   # ── LACT + ROCm + Vulkan packages ─────────────────────────────────────────
   # LACT is pulled from its own flake input for up-to-date RDNA3 support.
   # ROCm provides OpenCL / HIP compute. Vulkan tools round out the stack.
