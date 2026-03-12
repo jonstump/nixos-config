@@ -16,7 +16,7 @@
   # ROCm provides OpenCL / HIP compute. Vulkan tools round out the stack.
   environment.systemPackages = with pkgs; [
     # LACT — Linux AMDGPU Control (GUI + daemon client)
-    lact.packages.${pkgs.system}.default
+    lact
 
     # ROCm compute
     rocmPackages.rocm-runtime       # HIP / ROCm runtime
@@ -34,18 +34,6 @@
 
   # ── LACT daemon ───────────────────────────────────────────────────────────
   # The LACT flake ships its own NixOS module which declares the lactd systemd
-  # service correctly, including hardening options and the right ExecStart path.
-  # We import that module here rather than re-rolling our own service definition,
-  # so any upstream changes to the unit (new flags, sandboxing, etc.) are picked
-  # up automatically when the flake input is updated.
-  #
-  # The module is passed in via flake.nix → specialArgs and wired in below.
-  # It sets:
-  #   systemd.services.lactd.wantedBy    = [ "multi-user.target" ]
-  #   systemd.services.lactd.serviceConfig.ExecStart = "<lact>/bin/lact daemon"
-  #   systemd.services.lactd.serviceConfig.User      = "root"
-  imports = [ lact.nixosModules.default ];
-
   services.lact.enable = true;
 
   # ── ROCm environment ──────────────────────────────────────────────────────
@@ -117,9 +105,7 @@
   # Members of the "render" group (see core.nix) can open GPU render nodes
   # directly, and LACT can read temperature / fan data from hwmon.
   services.udev.extraRules = ''
-    # DRM render nodes
     SUBSYSTEM=="drm",   KERNEL=="renderD*",        GROUP="render", MODE="0660"
-    # amdgpu hwmon nodes (temps, fans, power) — read by LACT
     SUBSYSTEM=="hwmon", ATTRS{name}=="amdgpu",      GROUP="render", MODE="0660"
   '';
 }

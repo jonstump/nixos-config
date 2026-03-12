@@ -133,6 +133,7 @@
     lsfg-vk       # Lossless Scaling Frame Generation for Vulkan — software frame gen for any game
     lsfg-vk-ui    # GUI companion for lsfg-vk — configure frame gen settings
     ludusavi      # Cross-platform game save backup and restore tool
+    wlr-randr  # Wayland output management CLI — used by Apollo session hooks
   ];
 
   # ── udev rules for controllers ────────────────────────────────────────────
@@ -163,10 +164,6 @@
     enable    = true;
     openFirewall = true; # Opens the ports Apollo needs (47984-47990, 48010)
   };
-
-  environment.systemPackages = lib.mkAfter (with pkgs; [
-    wlr-randr  # Wayland output management CLI — used by Apollo session hooks
-  ]);
 
   # Apollo runs as a system service. We extend the upstream unit with
   # pre/post display-switching commands using a systemd drop-in override.
