@@ -152,10 +152,6 @@
   #   NOTE: connector name (DP-2) and exact modeline may differ on your system.
   #   Verify with `kscreen-doctor --outputs` or `wlr-randr` while logged in.
   #   Update the ExecStartPre / ExecStopPost commands accordingly.
-  services.apollo = {
-    enable    = true;
-    openFirewall = true; # Opens the ports Apollo needs (47984-47990, 48010)
-  };
 
   # Apollo runs as a system service. We extend the upstream unit with
   # pre/post display-switching commands using a systemd drop-in override.
