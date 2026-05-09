@@ -85,14 +85,6 @@
     capSysNice = true; # Allow gamescope to renice itself without sudo
   };
 
-  # ── MangoHud (in-game overlay: FPS, temps, frame times) ──────────────────
-  # programs.mangohud installs the package — no need to list it in
-  # systemPackages separately.
-  programs.mangohud = {
-    enable            = true;
-    enableSessionWide = false; # Set to true to force MangoHud in ALL Vulkan apps
-  };
-
   # ── Gaming packages ───────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     # Communication
