@@ -18,11 +18,9 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixos-hardware, lact, home-manager, plasma-manager, ... }: {
+  outputs = { self, nixpkgs, nixos-hardware, home-manager, plasma-manager, ... }: {
     nixosConfigurations.gaming-pc = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
-
-      specialArgs = { inherit lact; };
 
       modules = [
         ./hardware-configuration.nix
