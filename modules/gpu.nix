@@ -1,4 +1,4 @@
-{ config, pkgs, lib, lact, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   # ── AMDGPU kernel module settings ────────────────────────────────────────

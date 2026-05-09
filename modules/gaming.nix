@@ -134,7 +134,6 @@
     lsfg-vk-ui    # GUI companion for lsfg-vk — configure frame gen settings
     ludusavi      # Cross-platform game save backup and restore tool
     wlr-randr  # Wayland output management CLI — used by Apollo session hooks
-    lact # GPU over/underclocking tool
   ];
 
   # ── udev rules for controllers ────────────────────────────────────────────
