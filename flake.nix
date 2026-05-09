@@ -6,11 +6,6 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
-    lact = {
-      url = "github:ilya-zlobintsev/LACT";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
