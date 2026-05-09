@@ -56,20 +56,15 @@
     allowedTCPPortRanges = [
       { from = 27015; to = 27030; } # Steam matchmaking / HLTV
       { from = 47984; to = 47990; } # Apollo HTTPS / HTTP management ports
+      { from = 1714; to = 1764; } # KDE Connect
     ];
 
     allowedUDPPortRanges = [
       { from = 27000; to = 27100; } # Steam general UDP range
       { from = 47998; to = 48000; } # Apollo audio / video / control streams
+      { from = 1714; to = 1764; } # KDE Connect
     ];
 
-    # KDE Connect — phone integration
-    allowedTCPPortRanges = lib.mkAfter [
-      { from = 1714; to = 1764; }
-    ];
-    allowedUDPPortRanges = lib.mkAfter [
-      { from = 1714; to = 1764; }
-    ];
   };
 
   # ── Network optimisations ─────────────────────────────────────────────────
